@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 
 namespace Okosotthon
 {
-    public class Termosztat : OkosEszkoz
+    public class Termosztat : OkosEszkoz, IIdozitheto, IStatisztika
     {
+        private DateTime idozitoVege;
+
         public double JelenlegiHomerseklet { get; private set; }
 
         public double CelHomerseklet { get; private set; }
@@ -15,6 +16,7 @@ namespace Okosotthon
         {
             this.JelenlegiHomerseklet = 21.0;
             this.CelHomerseklet = celHomerseklet;
+            this.idozitoVege = DateTime.Now;
         }
 
         public override void ParancsVegrehajtasa(string parancs)
@@ -49,6 +51,36 @@ namespace Okosotthon
             }
 
             return false;
+        }
+
+        public void IdozitestBeallit(int perc)
+        {
+            if (perc < 0)
+            {
+                perc = 0;
+            }
+
+            this.idozitoVege = DateTime.Now.AddMinutes(perc);
+        }
+
+        public int GetMaradtIdo()
+        {
+            TimeSpan maradtIdo = this.idozitoVege - DateTime.Now;
+
+            if (maradtIdo.TotalMinutes <= 0)
+            {
+                return 0;
+            }
+
+            return (int)Math.Ceiling(maradtIdo.TotalMinutes);
+        }
+
+        public string StatisztikatKeszit()
+        {
+            return this.Nev
+                + " | Jelenlegi hőmérséklet: " + this.JelenlegiHomerseklet
+                + " °C | Célhőmérséklet: " + this.CelHomerseklet
+                + " °C | Hátralévő idő: " + this.GetMaradtIdo() + " perc";
         }
     }
 }
